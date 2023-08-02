@@ -1,6 +1,8 @@
 package com.example.learning3
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +47,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.example.learning3.ui.theme.Learning3Theme
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotesApp(viewModel: NotesViewModel) {
     val navController = rememberNavController()
@@ -73,6 +76,20 @@ fun NotesApp(viewModel: NotesViewModel) {
             val noteId = backStackEntry.arguments?.getLong("selectedId")
             noteId?.let {
                 ViewNoteScreen(
+                    navController = navController,
+                    selectedNoteId = noteId,
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
+        }
+        composable(
+            route = "${Screen.EditNote.route}/{selectedId}",
+            arguments = listOf(navArgument("selectedId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getLong("selectedId")
+            noteId?.let {
+                EditNoteScreen(
                     navController = navController,
                     selectedNoteId = noteId,
                     state = state,

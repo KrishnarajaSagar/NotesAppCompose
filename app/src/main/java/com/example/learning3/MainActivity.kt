@@ -1,10 +1,13 @@
 package com.example.learning3
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -50,6 +54,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -82,6 +87,7 @@ class MainActivity : ComponentActivity() {
         }
     )
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -97,27 +103,28 @@ class DemoNote(
     val content: String,
 )
 
+val notes: List<DemoNote> = listOf(
+    DemoNote("Title Title Title Title Title", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Suspendisse potenti nullam ac tortor vitae purus. Pharetra magna ac placerat vestibulum lectus mauris ultrices. Enim sit amet venenatis urna cursus eget nunc scelerisque viverra. Auctor eu augue ut lectus arcu bibendum at varius. Viverra orci sagittis eu volutpat. A pellentesque sit amet porttitor eget dolor morbi non. Ipsum consequat nisl vel pretium lectus quam id leo in. Convallis a cras semper auctor neque vitae tempus quam. Orci a scelerisque purus semper eget duis at tellus at. Quam adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus. Porttitor lacus luctus accumsan tortor posuere. Ac ut consequat semper viverra nam libero justo laoreet. Accumsan tortor posuere ac ut consequat semper viverra."),
+    DemoNote("Title Title Title Title Title", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Suspendisse potenti nullam ac tortor vitae purus. Pharetra magna ac placerat vestibulum lectus mauris ultrices. Enim sit amet venenatis urna cursus eget nunc scelerisque viverra. Auctor eu augue ut lectus arcu bibendum at varius. Viverra orci sagittis eu volutpat. A pellentesque sit amet porttitor eget dolor morbi non. Ipsum consequat nisl vel pretium lectus quam id leo in. Convallis a cras semper auctor neque vitae tempus quam. Orci a scelerisque purus semper eget duis at tellus at. Quam adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus. Porttitor lacus luctus accumsan tortor posuere. Ac ut consequat semper viverra nam libero justo laoreet. Accumsan tortor posuere ac ut consequat semper viverra."),
+    DemoNote("Title Title Title Title Title", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 1", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 2", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 3", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 1", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 2", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 3", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 1", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 2", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 3", "ih sdi uhsu dasuh xkcn kjn sdj"),
+    DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesGrid() {
-    val notes: List<DemoNote> = listOf(
-        DemoNote("Title Title Title Title Title", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Suspendisse potenti nullam ac tortor vitae purus. Pharetra magna ac placerat vestibulum lectus mauris ultrices. Enim sit amet venenatis urna cursus eget nunc scelerisque viverra. Auctor eu augue ut lectus arcu bibendum at varius. Viverra orci sagittis eu volutpat. A pellentesque sit amet porttitor eget dolor morbi non. Ipsum consequat nisl vel pretium lectus quam id leo in. Convallis a cras semper auctor neque vitae tempus quam. Orci a scelerisque purus semper eget duis at tellus at. Quam adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus. Porttitor lacus luctus accumsan tortor posuere. Ac ut consequat semper viverra nam libero justo laoreet. Accumsan tortor posuere ac ut consequat semper viverra."),
-        DemoNote("Title Title Title Title Title", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Suspendisse potenti nullam ac tortor vitae purus. Pharetra magna ac placerat vestibulum lectus mauris ultrices. Enim sit amet venenatis urna cursus eget nunc scelerisque viverra. Auctor eu augue ut lectus arcu bibendum at varius. Viverra orci sagittis eu volutpat. A pellentesque sit amet porttitor eget dolor morbi non. Ipsum consequat nisl vel pretium lectus quam id leo in. Convallis a cras semper auctor neque vitae tempus quam. Orci a scelerisque purus semper eget duis at tellus at. Quam adipiscing vitae proin sagittis nisl rhoncus mattis rhoncus. Porttitor lacus luctus accumsan tortor posuere. Ac ut consequat semper viverra nam libero justo laoreet. Accumsan tortor posuere ac ut consequat semper viverra."),
-        DemoNote("Title Title Title Title Title", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 1", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 2", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 3", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 1", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 2", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 3", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 1", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 2", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 3", "ih sdi uhsu dasuh xkcn kjn sdj"),
-        DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
-    )
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
@@ -329,6 +336,76 @@ fun CreateNoteView() {
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NoteItem(note: DemoNote) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        onClick = {}
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxHeight()
+        ) {
+            Text(
+                text = note.title,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 22.sp
+                ),
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(8.dp)
+            )
+            Text(
+                text = note.content,
+                maxLines = 8,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp,
+                )
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomLazyVerticalGrid() {
+    val gridLayoutManager = remember { GridLayoutManager(numColumns = 2) }
+
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        content = {
+            itemsIndexed(notes) { index, note ->
+                NoteItem(note)
+
+                // Calculate the height of the item and add it to the appropriate column
+                val itemHeight = with(LocalDensity.current) { 400.dp.toPx() } // Replace 400.dp with your desired item height
+                gridLayoutManager.addItemHeight(itemHeight)
+
+                // Check if the item is the last one in the row and reset column heights
+                if ((index + 1) % gridLayoutManager.getNumColumns() == 0) {
+                    gridLayoutManager.getColumnHeights().forEachIndexed { i, _ ->
+                        gridLayoutManager.setColumnHeight(i, 0f)
+                    }
+                }
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

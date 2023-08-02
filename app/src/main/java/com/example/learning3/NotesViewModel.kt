@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,13 +40,25 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
                 if (title.isBlank() || content.isBlank())
                     return
 
-                val note = Note(
-                    title = title,
-                    content = content,
-                    lastModified = System.currentTimeMillis()
-                )
-                viewModelScope.launch {
-                    noteDao.upsertNote(note)
+                if (state.value.editingNote != null) {
+                    val editedNote = Note(
+                        id = state.value.editingNote!!.id,
+                        title = title,
+                        content = content,
+                        lastModified = System.currentTimeMillis()
+                    )
+                    viewModelScope.launch {
+                        noteDao.upsertNote(editedNote)
+                    }
+                } else {
+                    val note = Note(
+                        title = title,
+                        content = content,
+                        lastModified = System.currentTimeMillis()
+                    )
+                    viewModelScope.launch {
+                        noteDao.upsertNote(note)
+                    }
                 }
                 _state.update {
                     it.copy(
@@ -65,6 +78,16 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
                 _state.update {
                     it.copy(
                         title = event.title
+                    )
+                }
+            }
+
+            is NoteEvent.StartEditing -> {
+                _state.update {
+                    it.copy(
+                        title = event.note.title,
+                        content = event.note.content,
+                        editingNote = event.note
                     )
                 }
             }

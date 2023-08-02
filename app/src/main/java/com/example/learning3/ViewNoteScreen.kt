@@ -1,5 +1,7 @@
 package com.example.learning3
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +15,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -35,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewNoteScreen(
@@ -47,16 +54,51 @@ fun ViewNoteScreen(
         note.id == selectedNoteId
     }
     var expanded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val menuItems = listOf<String>(
         "Edit note",
         "Delete note"
     )
+    if (showDeleteDialog) {
+        AlertDialog(
+            title = { Text("Confirm deletion?") },
+            text = { Text("The note will be deleted permanently") },
+            onDismissRequest = { showDeleteDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onEvent(NoteEvent.DeleteNote(note!!))
+                        navController.navigate(Screen.Notes.route) {
+                            popUpTo(Screen.Notes.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
         topBar = {
-            TopAppBar(
-                title = {},
+            CenterAlignedTopAppBar(
+                title = { Text(
+                    text = "Last modified on ${UtilityFunctions.formatDateAndTime(note?.lastModified ?: 0)}",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 12.sp,
+                    )) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -79,14 +121,21 @@ fun ViewNoteScreen(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        menuItems.forEachIndexed { index, item ->
-                            DropdownMenuItem(
-                                text = { Text(item) },
-                                onClick = {
-                                    expanded = false
-                                }
-                            )
-                        }
+                        DropdownMenuItem(
+                            text = { Text("Edit") },
+                            onClick = {
+                                expanded = false
+                                onEvent(NoteEvent.StartEditing(note!!))
+                                navController.navigate("${Screen.EditNote.route}/${selectedNoteId}")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            onClick = {
+                                expanded = false
+                                showDeleteDialog = showDeleteDialog.not()
+                            }
+                        )
                     }
                 }
             )
@@ -101,7 +150,7 @@ fun ViewNoteScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = note!!.title,
+                text = note?.title ?: "",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -113,7 +162,7 @@ fun ViewNoteScreen(
                     .height(16.dp)
             )
             Text(
-                text = note.content,
+                text = note?.content ?: "",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                 )
