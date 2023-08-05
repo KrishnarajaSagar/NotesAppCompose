@@ -61,36 +61,20 @@ fun ViewNoteScreen(
         "Delete note"
     )
     if (showDeleteDialog) {
-        AlertDialog(
-            title = { Text("Confirm deletion?") },
-            text = { Text("The note will be deleted permanently") },
+        DeleteDialog(
+            titleText = "Confirm deletion?",
+            bodyText = "The note will be deleted permanently",
             onDismissRequest = { showDeleteDialog = false },
-            confirmButton = {
-                Button(
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    ),
-                    onClick = {
-                        onEvent(NoteEvent.DeleteNote(note!!))
-                        navController.navigate(Screen.Notes.route) {
-                            popUpTo(Screen.Notes.route) {
-                                inclusive = true
-                            }
-                        }
+            onConfirmButtonClick = {
+                onEvent(NoteEvent.DeleteNote(note!!))
+                navController.navigate(Screen.Notes.route) {
+                    popUpTo(Screen.Notes.route) {
+                        inclusive = true
                     }
-                ) {
-                    Text("Delete")
                 }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                    }
-                ) {
-                    Text("Cancel")
-                }
+            onDismissButtonClick = {
+                showDeleteDialog = false
             }
         )
     }

@@ -117,6 +117,22 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
                     )
                 }
             }
+
+            is NoteEvent.EnableIsSelected -> {
+                val selectedNote = event.note
+                selectedNote.isSelected = true
+                viewModelScope.launch {
+                    noteDao.upsertNote(selectedNote)
+                }
+            }
+
+            is NoteEvent.DisableIsSelected -> {
+                val selectedNote = event.note
+                selectedNote.isSelected = false
+                viewModelScope.launch {
+                    noteDao.upsertNote(selectedNote)
+                }
+            }
         }
     }
 }
