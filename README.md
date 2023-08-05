@@ -7,5 +7,7 @@ A notes application built using Jetpack Compose, the new declarative framework f
 * CRUD operations
 * Data persistence with Room
 * Material 3 design
-* Search (TODO)
+* Search
 * Pins (TODO)
+* Tags (TODO)
+* Markdown support (TODO)
