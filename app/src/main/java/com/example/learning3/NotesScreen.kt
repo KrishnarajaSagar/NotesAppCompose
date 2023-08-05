@@ -1,7 +1,10 @@
 package com.example.learning3
 
 import android.os.Build
+import android.util.Log
+import android.widget.SearchView
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,12 +30,15 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -82,63 +88,90 @@ fun NotesScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            // contentPadding = PaddingValues(10.dp)
-        ) {
-            items(state.notes) { note ->
-                Card(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    ),
-                    onClick = {
-                        navController.navigate("${Screen.ViewNote.route}/${note.id}")
+        Column {
+            SearchBar(
+                modifier = Modifier.padding(16.dp),
+                query = state.searchQuery,
+                onQueryChange = {
+                    onEvent(NoteEvent.SetSearchQuery(it))
+                    // Log.d(state.searchQuery,"")
+                },
+                onClearClick = {
+                    onEvent(NoteEvent.SetSearchQuery(""))
+                },
+                leadingIcon = {
+                    IconButton(
+                        onClick = {  }
+                    )
+                    {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                     }
-                ) {
-                    Column(
+                },
+                isQueryEmpty = state.searchQuery.isBlank()
+            )
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(2),
+                modifier = Modifier.padding(
+                    horizontal = 12.dp
+                )
+                // contentPadding = PaddingValues(10.dp)
+            ) {
+                items(state.notes) { note ->
+                    Card(
                         modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxHeight(),
+                            .padding(4.dp),
+                        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        ),
+                        onClick = {
+                            navController.navigate("${Screen.ViewNote.route}/${note.id}")
+                        }
                     ) {
-                        Text(
-                            text = note.title,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                lineHeight = 22.sp
-                            ),
-                        )
-                        Spacer(
+                        Column(
                             modifier = Modifier
-                                .height(8.dp)
-                        )
-                        Text(
-                            text = note.content,
-                            maxLines = 8,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontSize = 16.sp,
+                                .padding(16.dp)
+                                .fillMaxHeight(),
+                        ) {
+                            Text(
+                                text = note.title,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    lineHeight = 22.sp
+                                ),
                             )
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .height(8.dp)
-                        )
-                        Text(
-                            text = formatDateAndTime(note.lastModified),
-                            maxLines = 1,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 12.sp,
-                            ),
-                        )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(8.dp)
+                            )
+                            Text(
+                                text = note.content,
+                                maxLines = 8,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 16.sp,
+                                )
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(8.dp)
+                            )
+                            Text(
+                                text = formatDateAndTime(note.lastModified),
+                                maxLines = 1,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 12.sp,
+                                ),
+                            )
+                        }
                     }
                 }
             }
+
         }
     }
 }

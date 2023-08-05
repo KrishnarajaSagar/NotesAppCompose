@@ -10,4 +10,15 @@ data class Note(
     val title: String,
     val content: String,
     val lastModified: Long
-)
+) {
+    fun doesMatchSearchQuery(query: String): Boolean {
+        val matchingCombinations = listOf<String>(
+            "$title$content",
+            "$title $content",
+            "${title.first()} ${content.first()}"
+        )
+        return matchingCombinations.any {
+            it.contains(query, true)
+        }
+    }
+}
