@@ -2,6 +2,7 @@ package com.example.learning3.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,11 +44,17 @@ fun EditNoteScreen(
     onEvent: (NoteEvent) -> Unit
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+        contentColor = MaterialTheme.colorScheme.inverseSurface,
         topBar = {
             TopAppBar(
                 title = {},
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.inverseSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.inverseSurface,
+                    titleContentColor = MaterialTheme.colorScheme.inverseSurface
+                ),
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -64,9 +72,6 @@ fun EditNoteScreen(
                     onEvent(NoteEvent.SaveNote)
                     navController.popBackStack()
                 },
-                modifier = Modifier
-                    .padding(0.dp)
-                    .padding(16.dp),
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ) {
@@ -79,9 +84,6 @@ fun EditNoteScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(
-                    horizontal = 16.dp
-                )
                 .verticalScroll(rememberScrollState())
                 .imePadding()
         ) {
@@ -97,8 +99,8 @@ fun EditNoteScreen(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 ),) },
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    textColor = MaterialTheme.colorScheme.onSurface,
+                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    textColor = MaterialTheme.colorScheme.inverseSurface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
@@ -108,6 +110,8 @@ fun EditNoteScreen(
                     fontWeight = FontWeight.SemiBold,
                     lineHeight = 22.sp
                 ),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 )
@@ -126,8 +130,8 @@ fun EditNoteScreen(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )) },
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    textColor = MaterialTheme.colorScheme.onSurface,
+                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    textColor = MaterialTheme.colorScheme.inverseSurface,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
@@ -135,6 +139,8 @@ fun EditNoteScreen(
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp,
                 ),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 )

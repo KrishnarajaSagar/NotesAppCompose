@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,8 +75,8 @@ fun ViewNoteScreen(
         )
     }
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+        contentColor = MaterialTheme.colorScheme.inverseSurface,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(
@@ -83,6 +84,12 @@ fun ViewNoteScreen(
                         style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 12.sp,
                     )) },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.inverseSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.inverseSurface,
+                    titleContentColor = MaterialTheme.colorScheme.inverseSurface
+                ),
                 navigationIcon = {
                     IconButton(
                         onClick = {

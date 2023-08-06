@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -86,9 +87,6 @@ fun NotesScreen(
                 onClick = {
                     navController.navigate(Screen.AddNote.route)
                 },
-                modifier = Modifier
-                    .padding(0.dp)
-                    .padding(16.dp),
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ) {
@@ -123,8 +121,17 @@ fun NotesScreen(
             } else {
                 TopAppBar(
                     title = {
-                        Text("${selectedNotes.size} items selected")
+                        Text("${selectedNotes.size} items selected", style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ))
                     },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        navigationIconContentColor = MaterialTheme.colorScheme.inverseSurface,
+                        actionIconContentColor = MaterialTheme.colorScheme.inverseSurface,
+                        titleContentColor = MaterialTheme.colorScheme.inverseSurface
+                    ),
                     navigationIcon = {
                         IconButton(
                             onClick = {
