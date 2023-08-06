@@ -1,10 +1,9 @@
-package com.example.learning3
+package com.example.learning3.data
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Upsert
 import androidx.room.Query
-import androidx.room.util.query
 import kotlinx.coroutines.flow.Flow
 
 @Dao

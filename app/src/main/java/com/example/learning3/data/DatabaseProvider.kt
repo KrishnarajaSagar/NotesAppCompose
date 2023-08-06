@@ -1,10 +1,10 @@
-package com.example.learning3
+package com.example.learning3.data
 
 import android.content.Context
 import androidx.room.Room
 
 object DatabaseProvider {
-    private var database: NoteDatabase ?= null
+    private var database: NoteDatabase?= null
 
     fun getDatabase(context: Context): NoteDatabase {
         return database ?: synchronized(this) {

@@ -1,4 +1,4 @@
-package com.example.learning3
+package com.example.learning3.navigation
 
 sealed class Screen(val route: String) {
     object Notes: Screen("notes")

@@ -1,4 +1,6 @@
-package com.example.learning3
+package com.example.learning3.ui.state
+
+import com.example.learning3.data.Note
 
 data class NoteState(
     val notes: List<Note> = emptyList(),

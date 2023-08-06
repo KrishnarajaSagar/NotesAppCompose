@@ -1,4 +1,6 @@
-package com.example.learning3
+package com.example.learning3.events
+
+import com.example.learning3.data.Note
 
 sealed interface NoteEvent {
     object SaveNote: NoteEvent

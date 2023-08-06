@@ -1,4 +1,4 @@
-package com.example.learning3
+package com.example.learning3.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -12,7 +12,9 @@ data class Note(
     val content: String,
     val lastModified: Long,
     @ColumnInfo("isSelected", defaultValue = "0")
-    var isSelected: Boolean = false
+    var isSelected: Boolean = false,
+    @ColumnInfo("isPinned", defaultValue = "0")
+    var isPinned: Boolean = false
 ) {
     fun doesMatchSearchQuery(query: String): Boolean {
         val matchingCombinations = listOf<String>(
