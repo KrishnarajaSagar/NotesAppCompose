@@ -13,4 +13,4 @@ A notes application built using Jetpack Compose, the new declarative framework f
 * Markdown support (TODO)
 * Settings (TODO)
 * Custom theme support in settings (TODO)
-* Sharing and exporting
+* Sharing and exporting (TODO)
