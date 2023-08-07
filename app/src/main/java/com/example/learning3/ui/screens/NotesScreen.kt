@@ -1,6 +1,7 @@
 package com.example.learning3.ui.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -17,6 +18,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.learning3.composables.DeleteDialog
+import com.example.learning3.composables.NotesGrid
 import com.example.learning3.data.Note
 import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
@@ -59,6 +63,7 @@ fun NotesScreen(
     onEvent: (NoteEvent) -> Unit
 ) {
     val selectedNotes = remember { mutableStateListOf<Note>() }
+    val pinnedNotes = remember { mutableStateListOf<Note>() }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
@@ -158,95 +163,74 @@ fun NotesScreen(
                                 contentDescription = "Delete notes"
                             )
                         }
-                    }
-                )
-            }
-            LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(2),
-                modifier = Modifier.padding(
-                    horizontal = 12.dp
-                )
-                // contentPadding = PaddingValues(10.dp)
-            ) {
-                items(state.notes) { note ->
-                    Card(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .combinedClickable(
+                        if (selectedNotes.all {
+                            it.isPinned
+                            }) {
+                            // Unpin note
+                            IconButton(
                                 onClick = {
-                                    if (selectedNotes.size >= 1) {
-                                        if (note.isSelected) {
-                                            onEvent(NoteEvent.DisableIsSelected(note))
-                                            selectedNotes.remove(note)
-                                        } else {
-                                            onEvent(NoteEvent.EnableIsSelected(note))
-                                            selectedNotes.add(note)
-                                        }
-                                    } else {
-                                        navController.navigate("${Screen.ViewNote.route}/${note.id}")
+                                    selectedNotes.forEach {
+                                        onEvent(NoteEvent.UnpinNote(it))
+                                        pinnedNotes.remove(it)
+                                        onEvent(NoteEvent.DisableIsSelected(it))
                                     }
-                                },
-                                onLongClick = {
-                                    if (note.isSelected) {
-                                        onEvent(NoteEvent.DisableIsSelected(note))
-                                        selectedNotes.remove(note)
-                                    } else {
-                                        onEvent(NoteEvent.EnableIsSelected(note))
-                                        selectedNotes.add(note)
-                                    }
+                                    Log.d("pin",pinnedNotes.size.toString())
+                                    selectedNotes.clear()
                                 }
-                            ),
-//                        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (!note.isSelected)MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = if (!note.isSelected)MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-//                        onClick = {
-//                            navController.navigate("${Screen.ViewNote.route}/${note.id}")
-//                        }
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxHeight(),
-                        ) {
-                            Text(
-                                text = note.title,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    lineHeight = 22.sp
-                                ),
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(8.dp)
-                            )
-                            Text(
-                                text = note.content,
-                                maxLines = 8,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontSize = 16.sp,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.PushPin,
+                                    contentDescription = "Unpin notes"
                                 )
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(8.dp)
-                            )
-                            Text(
-                                text = formatDateAndTime(note.lastModified),
-                                maxLines = 1,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = 12.sp,
-                                ),
-                            )
+                            }
+                        } else if (selectedNotes.all {
+                                !it.isPinned
+                            }) {
+                            // Pin note
+                            IconButton(
+                                onClick = {
+                                    selectedNotes.forEach {
+                                        onEvent(NoteEvent.PinNote(it))
+                                        pinnedNotes.add(it)
+                                        onEvent(NoteEvent.DisableIsSelected(it))
+                                    }
+                                    selectedNotes.clear()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.PushPin,
+                                    contentDescription = "Pin notes"
+                                )
+                            }
                         }
                     }
-                }
+                )
             }
+            NotesGrid(
+                notes = state.notes,
+                onNoteClick = { note ->
+                    if (selectedNotes.size >= 1) {
+                        if (note.isSelected) {
+                            onEvent(NoteEvent.DisableIsSelected(note))
+                            selectedNotes.remove(note)
+                        } else {
+                            onEvent(NoteEvent.EnableIsSelected(note))
+                            selectedNotes.add(note)
+                        }
+                    } else {
+                        navController.navigate("${Screen.ViewNote.route}/${note.id}")
+                    }
+                },
+                onNoteLongClick = { note ->
+                    if (note.isSelected) {
+                        onEvent(NoteEvent.DisableIsSelected(note))
+                        selectedNotes.remove(note)
+                    } else {
+                        onEvent(NoteEvent.EnableIsSelected(note))
+                        selectedNotes.add(note)
+                    }
+                }
+            )
 
         }
     }

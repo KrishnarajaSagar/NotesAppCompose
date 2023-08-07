@@ -117,52 +117,6 @@ val notes: List<DemoNote> = listOf(
     DemoNote("Title 4", "ih sdi uhsu dasuh xkcn kjn sdj"),
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NotesGrid() {
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface
-    ) { padding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .padding(8.dp)
-            // contentPadding = PaddingValues(10.dp)
-        ) {
-            items(notes) { note ->
-                Card(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    ),
-                    onClick = {}
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = note.title,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                        )
-                        Text(
-                            text = note.content,
-                            maxLines = 8,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 data class MenuItem(
     val index: Int,

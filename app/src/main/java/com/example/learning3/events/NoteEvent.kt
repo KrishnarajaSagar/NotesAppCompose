@@ -11,6 +11,8 @@ sealed interface NoteEvent {
     // object SearchNotes: NoteEvent
     data class EnableIsSelected(val note: Note): NoteEvent
     data class DisableIsSelected(val note: Note): NoteEvent
+    data class PinNote(val note: Note): NoteEvent
+    data class UnpinNote(val note: Note): NoteEvent
     data class DeleteNote(val note: Note): NoteEvent
     data class StartEditing(val note: Note): NoteEvent
     // object StopEditing: NoteEvent

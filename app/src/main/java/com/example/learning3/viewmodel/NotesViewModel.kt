@@ -26,10 +26,11 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
     private val _state = MutableStateFlow(NoteState())
 
     val state = combine(_state, _notes) { state, notes ->
+        val sortedNotes = notes.sortedWith(compareByDescending<Note> { it.isPinned }.thenBy { it.id })
         val filteredNotes = if (state.searchQuery.isBlank()) {
-            notes
+            sortedNotes
         } else {
-            notes.filter { it.doesMatchSearchQuery(state.searchQuery) }
+            sortedNotes.filter { it.doesMatchSearchQuery(state.searchQuery) }
         }
         state.copy(
             notes = filteredNotes
@@ -125,6 +126,21 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
                 selectedNote.isSelected = false
                 viewModelScope.launch {
                     noteDao.upsertNote(selectedNote)
+                }
+            }
+
+            is NoteEvent.PinNote -> {
+                val toBePinnedNote = event.note
+                toBePinnedNote.isPinned = true
+                viewModelScope.launch {
+                    noteDao.upsertNote(toBePinnedNote)
+                }
+            }
+            is NoteEvent.UnpinNote -> {
+                val toBeUnpinnedNote = event.note
+                toBeUnpinnedNote.isPinned = false
+                viewModelScope.launch {
+                    noteDao.upsertNote(toBeUnpinnedNote)
                 }
             }
         }
