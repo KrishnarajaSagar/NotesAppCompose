@@ -47,10 +47,10 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
                     noteDao.deleteNote(event.note)
                 }
             }
-            is NoteEvent.DeleteAllNotes -> {
+            is NoteEvent.ClearAllNotes -> {
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
-                        noteDao.removeAllNotes()
+                        noteDao.clearAllNotes()
                     }
                 }
             }

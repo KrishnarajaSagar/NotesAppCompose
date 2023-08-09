@@ -76,7 +76,7 @@ fun SettingsScreen(
             bodyText = "All notes will be deleted permanently",
             onDismissRequest = { showDeleteDialog = false },
             onConfirmButtonClick = {
-                onEvent(NoteEvent.DeleteAllNotes)
+                onEvent(NoteEvent.ClearAllNotes)
                 showDeleteDialog = false
             },
             onDismissButtonClick = {
