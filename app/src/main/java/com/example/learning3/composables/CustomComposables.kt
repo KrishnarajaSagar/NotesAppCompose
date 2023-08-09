@@ -32,6 +32,8 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -71,9 +73,8 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
-    onClearClick: () -> Unit,
     leadingIcon: @Composable() (() -> Unit)?,
-    isQueryEmpty: Boolean,
+    trailingIcon: @Composable() (() -> Unit)?,
 ) {
     Surface(
         modifier = modifier
@@ -102,27 +103,7 @@ fun SearchBar(
             modifier = Modifier
                 .fillMaxWidth(),
             leadingIcon = leadingIcon,
-            trailingIcon = {
-                if (isQueryEmpty) {
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
-                    }
-                } else {
-                    IconButton(
-                        onClick = {
-                            onClearClick()
-                            onQueryChange("")
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Clear search query"
-                        )
-                    }
-                }
-            },
+            trailingIcon = trailingIcon,
         )
     }
 }
@@ -285,6 +266,35 @@ fun NotesGrid(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsListItem(
+    title: String,
+    trailingContent: @Composable() (() -> Unit)?
+) {
+    ListItem(
+        headlineText = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 20.sp
+
+                )
+            )
+        },
+        trailingContent = trailingContent,
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+            headlineColor = MaterialTheme.colorScheme.inverseSurface,
+            disabledHeadlineColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.6f)
+        ),
+//        modifier = Modifier
+//            .padding(
+//                top = 12.dp
+//            )
+    )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

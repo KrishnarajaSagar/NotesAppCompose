@@ -13,15 +13,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
@@ -41,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -62,6 +68,7 @@ fun NotesScreen(
     state: NoteState,
     onEvent: (NoteEvent) -> Unit
 ) {
+    var expanded by remember { mutableStateOf(false) }
     val selectedNotes = remember { mutableStateListOf<Note>() }
     val pinnedNotes = remember { mutableStateListOf<Note>() }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -110,9 +117,6 @@ fun NotesScreen(
                         onEvent(NoteEvent.SetSearchQuery(it))
                         // Log.d(state.searchQuery,"")
                     },
-                    onClearClick = {
-                        onEvent(NoteEvent.SetSearchQuery(""))
-                    },
                     leadingIcon = {
                         IconButton(
                             onClick = {  }
@@ -121,7 +125,53 @@ fun NotesScreen(
                             Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
-                    isQueryEmpty = state.searchQuery.isBlank()
+                    trailingIcon = {
+                        if (state.searchQuery.isBlank()) {
+                            IconButton(
+                                onClick = {
+                                    expanded = true
+                                }
+                            ) {
+                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
+                            }
+                            MaterialTheme(
+                                shapes = MaterialTheme.shapes.copy(
+                                    extraSmall = RoundedCornerShape(16.dp)
+                                ),
+                            ) {
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    offset = DpOffset(10.dp,0.dp),
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Settings") },
+                                        onClick = {
+                                            expanded = false
+                                            navController.navigate(Screen.Settings.route)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("About") },
+                                        onClick = {
+                                            expanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        } else {
+                            IconButton(
+                                onClick = {
+                                    onEvent(NoteEvent.SetSearchQuery(""))
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear search query"
+                                )
+                            }
+                        }
+                    }
                 )
             } else {
                 TopAppBar(
@@ -231,7 +281,6 @@ fun NotesScreen(
                     }
                 }
             )
-
         }
     }
 }

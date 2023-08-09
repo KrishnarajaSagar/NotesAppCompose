@@ -13,6 +13,7 @@ import com.example.learning3.ui.screens.EditNoteScreen
 import com.example.learning3.ui.screens.NotesScreen
 import com.example.learning3.viewmodel.NotesViewModel
 import com.example.learning3.navigation.Screen
+import com.example.learning3.ui.screens.SettingsScreen
 import com.example.learning3.ui.screens.ViewNoteScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -64,6 +65,11 @@ fun NotesApp(viewModel: NotesViewModel) {
                     onEvent = viewModel::onEvent
                 )
             }
+        }
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                navController = navController
+            )
         }
     }
 }

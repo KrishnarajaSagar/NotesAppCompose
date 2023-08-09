@@ -2,11 +2,13 @@ package com.example.learning3.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -108,25 +111,32 @@ fun ViewNoteScreen(
                         Icon(Icons.Default.MoreVert,
                             contentDescription = "More options")
                     }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                    MaterialTheme(
+                        shapes = MaterialTheme.shapes.copy(
+                            extraSmall = RoundedCornerShape(16.dp)
+                        ),
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("Edit") },
-                            onClick = {
-                                expanded = false
-                                onEvent(NoteEvent.StartEditing(note!!))
-                                navController.navigate("${Screen.EditNote.route}/${selectedNoteId}")
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Delete") },
-                            onClick = {
-                                expanded = false
-                                showDeleteDialog = showDeleteDialog.not()
-                            }
-                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            offset = DpOffset(10.dp,0.dp),
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Edit") },
+                                onClick = {
+                                    expanded = false
+                                    onEvent(NoteEvent.StartEditing(note!!))
+                                    navController.navigate("${Screen.EditNote.route}/${selectedNoteId}")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Delete") },
+                                onClick = {
+                                    expanded = false
+                                    showDeleteDialog = showDeleteDialog.not()
+                                }
+                            )
+                        }
                     }
                 }
             )
