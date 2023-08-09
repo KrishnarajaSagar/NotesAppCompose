@@ -9,8 +9,7 @@ A notes application built using Jetpack Compose, the new declarative framework f
 * Material 3 design
 * Search
 * Pins
+* Settings (Theme mode, Color scheme selection)
 * Tags (TODO)
 * Markdown support (TODO)
-* Settings (TODO)
-* Custom theme support in settings (TODO)
 * Sharing and exporting (TODO)
