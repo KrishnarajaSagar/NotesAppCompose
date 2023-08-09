@@ -3,6 +3,10 @@ A notes application built using Jetpack Compose, the new declarative framework f
 
 (Still in development)
 
+Notes Screen                              | Settings                       
+:----------------------------------------:|:------------------------------:
+![Notes Screen](images/notes_screen.png)  |![Settings](images/settings.png) 
+
 ## Features
 * CRUD operations
 * Data persistence with Room
