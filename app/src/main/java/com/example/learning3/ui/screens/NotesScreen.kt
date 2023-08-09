@@ -155,6 +155,7 @@ fun NotesScreen(
                                         text = { Text("About") },
                                         onClick = {
                                             expanded = false
+                                            navController.navigate(Screen.About.route)
                                         }
                                     )
                                 }

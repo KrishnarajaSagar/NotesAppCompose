@@ -6,4 +6,5 @@ sealed class Screen(val route: String) {
     object ViewNote: Screen("viewNote/{noteId}")
     object EditNote: Screen("editNote/{noteId}")
     object Settings: Screen("settings")
+    object About: Screen("about")
 }

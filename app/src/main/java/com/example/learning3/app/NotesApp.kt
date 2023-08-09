@@ -13,6 +13,7 @@ import com.example.learning3.ui.screens.EditNoteScreen
 import com.example.learning3.ui.screens.NotesScreen
 import com.example.learning3.viewmodel.NotesViewModel
 import com.example.learning3.navigation.Screen
+import com.example.learning3.ui.screens.AboutScreen
 import com.example.learning3.ui.screens.SettingsScreen
 import com.example.learning3.ui.screens.ViewNoteScreen
 
@@ -68,6 +69,11 @@ fun NotesApp(viewModel: NotesViewModel) {
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
+                navController = navController
+            )
+        }
+        composable(Screen.About.route) {
+            AboutScreen(
                 navController = navController
             )
         }
