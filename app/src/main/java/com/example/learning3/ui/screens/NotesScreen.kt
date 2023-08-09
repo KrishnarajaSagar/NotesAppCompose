@@ -96,6 +96,7 @@ fun NotesScreen(
             ExtendedFloatingActionButton(
                 onClick = {
                     navController.navigate(Screen.AddNote.route)
+                    onEvent(NoteEvent.SetSearchQuery(""))
                 },
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer

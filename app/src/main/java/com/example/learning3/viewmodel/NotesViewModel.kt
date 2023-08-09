@@ -6,12 +6,14 @@ import com.example.learning3.data.Note
 import com.example.learning3.data.NoteDao
 import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
@@ -43,6 +45,13 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
                     noteDao.deleteNote(event.note)
+                }
+            }
+            is NoteEvent.DeleteAllNotes -> {
+                viewModelScope.launch {
+                    withContext(Dispatchers.IO) {
+                        noteDao.removeAllNotes()
+                    }
                 }
             }
             NoteEvent.SaveNote -> {
