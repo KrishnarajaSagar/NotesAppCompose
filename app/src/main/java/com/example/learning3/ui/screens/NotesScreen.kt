@@ -4,16 +4,11 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,8 +19,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.PushPin
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,8 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,11 +52,10 @@ import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
 import com.example.learning3.navigation.Screen
 import com.example.learning3.composables.SearchBar
-import com.example.learning3.utilities.UtilityFunctions.formatDateAndTime
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
     navController: NavController,
@@ -76,6 +67,9 @@ fun NotesScreen(
     val selectedNotes = remember { mutableStateListOf<Note>() }
     val pinnedNotes = remember { mutableStateListOf<Note>() }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val focusManager = LocalFocusManager.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     if (showDeleteDialog) {
         DeleteDialog(
@@ -111,20 +105,32 @@ fun NotesScreen(
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ) { padding ->
-        Column {
+    ) {
+        Column(modifier = Modifier
+            .padding(it)
+            .fillMaxSize()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }) {
             if (selectedNotes.isEmpty()) {
                 SearchBar(
                     modifier = Modifier.padding(16.dp),
                     query = state.searchQuery,
-                    onQueryChange = {
-                        onEvent(NoteEvent.SetSearchQuery(it))
+                    onQueryChange = { str ->
+                        onEvent(NoteEvent.SetSearchQuery(str))
                         // Log.d(state.searchQuery,"")
                     },
                     leadingIcon = {
                         IconButton(
                             onClick = {
-                                Toast.makeText(context,"Feature under development", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Feature under development",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         )
                         {
@@ -138,7 +144,10 @@ fun NotesScreen(
                                     expanded = true
                                 }
                             ) {
-                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "More options"
+                                )
                             }
                             MaterialTheme(
                                 shapes = MaterialTheme.shapes.copy(
@@ -147,7 +156,7 @@ fun NotesScreen(
                             ) {
                                 DropdownMenu(
                                     expanded = expanded,
-                                    offset = DpOffset(10.dp,0.dp),
+                                    offset = DpOffset(10.dp, 0.dp),
                                     onDismissRequest = { expanded = false }
                                 ) {
                                     DropdownMenuItem(
@@ -183,10 +192,13 @@ fun NotesScreen(
             } else {
                 TopAppBar(
                     title = {
-                        Text("${selectedNotes.size} items selected", style = MaterialTheme.typography.bodyLarge.copy(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
-                        ))
+                        Text(
+                            "${selectedNotes.size} items selected",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
                     },
                     colors = TopAppBarDefaults.smallTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.inverseOnSurface,
@@ -197,8 +209,8 @@ fun NotesScreen(
                     navigationIcon = {
                         IconButton(
                             onClick = {
-                                selectedNotes.forEach {
-                                    onEvent(NoteEvent.DisableIsSelected(it))
+                                selectedNotes.forEach { note ->
+                                    onEvent(NoteEvent.DisableIsSelected(note))
                                 }
                                 selectedNotes.clear()
                             }
@@ -220,18 +232,18 @@ fun NotesScreen(
                                 contentDescription = "Delete notes"
                             )
                         }
-                        if (selectedNotes.all {
-                            it.isPinned
+                        if (selectedNotes.all { note ->
+                                note.isPinned
                             }) {
                             // Unpin note
                             IconButton(
                                 onClick = {
-                                    selectedNotes.forEach {
-                                        onEvent(NoteEvent.UnpinNote(it))
-                                        pinnedNotes.remove(it)
-                                        onEvent(NoteEvent.DisableIsSelected(it))
+                                    selectedNotes.forEach { note ->
+                                        onEvent(NoteEvent.UnpinNote(note))
+                                        pinnedNotes.remove(note)
+                                        onEvent(NoteEvent.DisableIsSelected(note))
                                     }
-                                    Log.d("pin",pinnedNotes.size.toString())
+                                    Log.d("pin", pinnedNotes.size.toString())
                                     selectedNotes.clear()
                                 }
                             ) {
@@ -240,16 +252,16 @@ fun NotesScreen(
                                     contentDescription = "Unpin notes"
                                 )
                             }
-                        } else if (selectedNotes.all {
-                                !it.isPinned
+                        } else if (selectedNotes.all { note ->
+                                !note.isPinned
                             }) {
                             // Pin note
                             IconButton(
                                 onClick = {
-                                    selectedNotes.forEach {
-                                        onEvent(NoteEvent.PinNote(it))
-                                        pinnedNotes.add(it)
-                                        onEvent(NoteEvent.DisableIsSelected(it))
+                                    selectedNotes.forEach { note ->
+                                        onEvent(NoteEvent.PinNote(note))
+                                        pinnedNotes.add(note)
+                                        onEvent(NoteEvent.DisableIsSelected(note))
                                     }
                                     selectedNotes.clear()
                                 }
@@ -291,4 +303,3 @@ fun NotesScreen(
         }
     }
 }
-
