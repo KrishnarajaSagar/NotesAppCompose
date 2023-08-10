@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -32,11 +33,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -52,6 +55,7 @@ import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
 import com.example.learning3.navigation.Screen
 import com.example.learning3.composables.SearchBar
+import kotlinx.coroutines.delay
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -67,6 +71,7 @@ fun NotesScreen(
     val selectedNotes = remember { mutableStateListOf<Note>() }
     val pinnedNotes = remember { mutableStateListOf<Note>() }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showScreen by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -107,15 +112,17 @@ fun NotesScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) {
-        Column(modifier = Modifier
-            .padding(it)
-            .fillMaxSize()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            }) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                }) {
             if (selectedNotes.isEmpty()) {
                 SearchBar(
                     modifier = Modifier.padding(16.dp),
@@ -276,31 +283,45 @@ fun NotesScreen(
                     }
                 )
             }
-            NotesGrid(
-                notes = state.notes,
-                onNoteClick = { note ->
-                    if (selectedNotes.size >= 1) {
-                        if (note.isSelected) {
-                            onEvent(NoteEvent.DisableIsSelected(note))
-                            selectedNotes.remove(note)
-                        } else {
-                            onEvent(NoteEvent.EnableIsSelected(note))
-                            selectedNotes.add(note)
-                        }
-                    } else {
-                        navController.navigate("${Screen.ViewNote.route}/${note.id}")
-                    }
-                },
-                onNoteLongClick = { note ->
-                    if (note.isSelected) {
-                        onEvent(NoteEvent.DisableIsSelected(note))
-                        selectedNotes.remove(note)
-                    } else {
-                        onEvent(NoteEvent.EnableIsSelected(note))
-                        selectedNotes.add(note)
-                    }
+
+            LaunchedEffect(key1 = 1, block = {
+                delay(100)
+                showScreen = true
+            })
+
+            if (state.notes.isEmpty()) {
+                AnimatedVisibility(visible = showScreen) {
+                    Text(text = "No Notes Saved")
                 }
-            )
+            } else {
+                AnimatedVisibility(visible = showScreen) {
+                    NotesGrid(
+                        notes = state.notes.reversed(),
+                        onNoteClick = { note ->
+                            if (selectedNotes.size >= 1) {
+                                if (note.isSelected) {
+                                    onEvent(NoteEvent.DisableIsSelected(note))
+                                    selectedNotes.remove(note)
+                                } else {
+                                    onEvent(NoteEvent.EnableIsSelected(note))
+                                    selectedNotes.add(note)
+                                }
+                            } else {
+                                navController.navigate("${Screen.ViewNote.route}/${note.id}")
+                            }
+                        },
+                        onNoteLongClick = { note ->
+                            if (note.isSelected) {
+                                onEvent(NoteEvent.DisableIsSelected(note))
+                                selectedNotes.remove(note)
+                            } else {
+                                onEvent(NoteEvent.EnableIsSelected(note))
+                                selectedNotes.add(note)
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 }
