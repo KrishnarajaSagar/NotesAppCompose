@@ -1,5 +1,6 @@
 package com.example.learning3.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,7 @@ import com.example.learning3.composables.DeleteDialog
 import com.example.learning3.composables.SettingsListItem
 import com.example.learning3.data.DarkThemeConfig
 import com.example.learning3.events.NoteEvent
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +71,7 @@ fun SettingsScreen(
     var selectedOptionText by remember { mutableStateOf(themeModeOptions[0]) }
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteCompleteIcon by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
         DeleteDialog(
@@ -78,6 +81,11 @@ fun SettingsScreen(
             onConfirmButtonClick = {
                 onEvent(NoteEvent.ClearAllNotes)
                 showDeleteDialog = false
+                showDeleteCompleteIcon = true
+                scope.launch {
+                    delay(1500)
+                    showDeleteCompleteIcon = false
+                }
             },
             onDismissButtonClick = {
                 showDeleteDialog = false
@@ -198,7 +206,7 @@ fun SettingsScreen(
                     }
                 )
                 SettingsListItem(
-                    title = "Color scheme",
+                    title = "Color Scheme",
                     trailingContent = null
                 )
                 Row(
@@ -314,14 +322,25 @@ fun SettingsScreen(
             SettingsListItem(
                 title = "Clear All Notes",
                 trailingContent = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_delete_forever_40),
-                        contentDescription = "Clear All Notes",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable {
-                            showDeleteDialog = true
+                    Row {
+                        AnimatedVisibility(visible = showDeleteCompleteIcon) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_check_circle_24),
+                                contentDescription = "Deletion Complete",
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
                         }
-                    )
+                        AnimatedVisibility(visible = !showDeleteCompleteIcon) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_delete_forever_40),
+                                contentDescription = "Clear All Notes",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable {
+                                    showDeleteDialog = true
+                                }
+                            )
+                        }
+                    }
                 }
             )
         }
