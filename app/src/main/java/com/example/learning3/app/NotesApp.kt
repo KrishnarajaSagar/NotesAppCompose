@@ -69,7 +69,8 @@ fun NotesApp(viewModel: NotesViewModel) {
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
-                navController = navController
+                navController = navController,
+                onEvent = viewModel::onEvent
             )
         }
         composable(Screen.About.route) {
