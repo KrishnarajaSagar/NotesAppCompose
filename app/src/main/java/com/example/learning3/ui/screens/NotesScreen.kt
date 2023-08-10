@@ -294,23 +294,15 @@ fun NotesScreen(
                     Text(text = "No Notes Saved")
                 }
             } else {
-                AnimatedVisibility(visible = showScreen) {
-                    NotesGrid(
-                        notes = state.notes.reversed(),
-                        onNoteClick = { note ->
-                            if (selectedNotes.size >= 1) {
-                                if (note.isSelected) {
-                                    onEvent(NoteEvent.DisableIsSelected(note))
-                                    selectedNotes.remove(note)
-                                } else {
-                                    onEvent(NoteEvent.EnableIsSelected(note))
-                                    selectedNotes.add(note)
-                                }
-                            } else {
-                                navController.navigate("${Screen.ViewNote.route}/${note.id}")
-                            }
-                        },
-                        onNoteLongClick = { note ->
+                val pinnedNotesList = state.notes.filter { note -> note.isPinned }
+                val unPinnedNotesList = state.notes.filter { note -> !note.isPinned }
+                val list = mutableListOf<Note>()
+                list.addAll(pinnedNotesList.reversed())
+                list.addAll(unPinnedNotesList.reversed())
+                NotesGrid(
+                    notes = list,
+                    onNoteClick = { note ->
+                        if (selectedNotes.size >= 1) {
                             if (note.isSelected) {
                                 onEvent(NoteEvent.DisableIsSelected(note))
                                 selectedNotes.remove(note)
@@ -318,9 +310,20 @@ fun NotesScreen(
                                 onEvent(NoteEvent.EnableIsSelected(note))
                                 selectedNotes.add(note)
                             }
+                        } else {
+                            navController.navigate("${Screen.ViewNote.route}/${note.id}")
                         }
-                    )
-                }
+                    },
+                    onNoteLongClick = { note ->
+                        if (note.isSelected) {
+                            onEvent(NoteEvent.DisableIsSelected(note))
+                            selectedNotes.remove(note)
+                        } else {
+                            onEvent(NoteEvent.EnableIsSelected(note))
+                            selectedNotes.add(note)
+                        }
+                    }
+                )
             }
         }
     }
