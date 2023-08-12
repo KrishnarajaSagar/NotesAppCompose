@@ -330,7 +330,14 @@ fun NotesScreen(
 
             if (state.notes.isEmpty()) {
                 AnimatedVisibility(visible = showScreen) {
-                    Text(text = "No Notes Saved")
+                    Text(
+                        text = "No Notes Saved",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            color = MaterialTheme.colorScheme.inverseSurface.copy(
+                                alpha = 0.6f
+                            )
+                        )
+                    )
                 }
             } else {
                 val pinnedNotesList = state.notes.filter { note -> note.isPinned }
