@@ -164,6 +164,7 @@ fun ViewNoteScreen(
                             DropdownMenuItem(
                                 text = { Text("Export") },
                                 onClick = {
+                                    expanded = false
                                     showExportDialog = true
                                 }
                             )
