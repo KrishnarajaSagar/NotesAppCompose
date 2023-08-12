@@ -4,6 +4,7 @@ import com.example.learning3.data.Note
 
 sealed interface NoteEvent {
     object SaveNote: NoteEvent
+    data class ExportNote(val note: Note): NoteEvent
     object ClearAllNotes: NoteEvent
     // data class SaveEditedNote(val note: Note): NoteEvent
     data class SetTitle(val title: String): NoteEvent

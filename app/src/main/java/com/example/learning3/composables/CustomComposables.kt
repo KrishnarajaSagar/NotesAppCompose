@@ -44,6 +44,7 @@ import com.example.learning3.data.Note
 import com.example.learning3.ui.theme.Learning3Theme
 import com.example.learning3.utilities.UtilityFunctions
 import com.example.learning3.utilities.UtilityFunctions.calculateDelayAndEasing
+import com.example.learning3.utilities.UtilityFunctions.formatDateAndTime
 import com.example.learning3.utilities.UtilityFunctions.scaleAndAlpha
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,9 +93,10 @@ fun SearchBar(
 }
 
 @Composable
-fun DeleteDialog(
+fun Dialog(
     titleText: String,
     bodyText: String,
+    confirmButtonText: String,
     onDismissRequest: () -> Unit,
     onConfirmButtonClick: () -> Unit,
     onDismissButtonClick: () -> Unit
@@ -111,7 +113,7 @@ fun DeleteDialog(
                 ),
                 onClick = onConfirmButtonClick
             ) {
-                Text("Delete")
+                Text(confirmButtonText)
             }
         },
         dismissButton = {
@@ -251,7 +253,7 @@ fun NotesGrid(
                             .height(8.dp)
                     )
                     Text(
-                        text = UtilityFunctions.formatDateAndTime(note.lastModified),
+                        text = note.lastModified.formatDateAndTime(),
                         maxLines = 1,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 12.sp,

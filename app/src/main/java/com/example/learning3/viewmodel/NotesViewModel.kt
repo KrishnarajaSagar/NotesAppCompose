@@ -1,11 +1,14 @@
 package com.example.learning3.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learning3.data.Note
 import com.example.learning3.data.NoteDao
 import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
+import com.example.learning3.utilities.UtilityFunctions.exportNoteToPDF
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,6 +43,7 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: NoteEvent) {
         when(event) {
             is NoteEvent.DeleteNote -> {
@@ -87,6 +91,9 @@ class NotesViewModel(private val noteDao: NoteDao) : ViewModel() {
                         content = ""
                     )
                 }
+            }
+            is NoteEvent.ExportNote -> {
+                exportNoteToPDF(event.note)
             }
             is NoteEvent.SetContent -> {
                 _state.update {

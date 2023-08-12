@@ -1,8 +1,8 @@
 package com.example.learning3.ui.screens
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -29,17 +29,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.learning3.composables.DeleteDialog
+import com.example.learning3.composables.Dialog
 import com.example.learning3.data.Note
 import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
 import com.example.learning3.navigation.Screen
-import com.example.learning3.utilities.UtilityFunctions
+import com.example.learning3.utilities.UtilityFunctions.exportNoteDialogBody
+import com.example.learning3.utilities.UtilityFunctions.exportNoteDialogSuccessMsg
+import com.example.learning3.utilities.UtilityFunctions.exportNoteDialogTitle
+import com.example.learning3.utilities.UtilityFunctions.formatDateAndTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,14 +59,15 @@ fun ViewNoteScreen(
     }
     var expanded by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val menuItems = listOf<String>(
-        "Edit note",
-        "Delete note"
-    )
+    var showExportDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
     if (showDeleteDialog) {
-        DeleteDialog(
+        Dialog(
             titleText = "Confirm deletion?",
             bodyText = "The note will be deleted permanently",
+            confirmButtonText = "Delete",
             onDismissRequest = { showDeleteDialog = false },
             onConfirmButtonClick = {
                 onEvent(NoteEvent.DeleteNote(note!!))
@@ -77,16 +82,39 @@ fun ViewNoteScreen(
             }
         )
     }
+
+    if (showExportDialog && note != null) {
+        val selectedNotes = listOf(note)
+        Dialog(
+            titleText = exportNoteDialogTitle(selectedNotes),
+            bodyText = exportNoteDialogBody(selectedNotes),
+            confirmButtonText = "Export",
+            onDismissRequest = { showExportDialog = false },
+            onDismissButtonClick = { showExportDialog = false },
+            onConfirmButtonClick = {
+                expanded = false
+                onEvent(NoteEvent.ExportNote(note))
+                Toast.makeText(
+                    context,
+                    exportNoteDialogSuccessMsg(selectedNotes),
+                    Toast.LENGTH_SHORT
+                ).show()
+                showExportDialog = false
+            })
+    }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.inverseOnSurface,
         contentColor = MaterialTheme.colorScheme.inverseSurface,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(
-                    text = "Last modified on ${UtilityFunctions.formatDateAndTime(note?.lastModified ?: 0)}",
+                title = {
+                    Text(
+                        text = "Last modified on ${(note?.lastModified ?: 0).formatDateAndTime()}",
                         style = MaterialTheme.typography.bodySmall.copy(
-                        fontSize = 12.sp,
-                    )) },
+                            fontSize = 12.sp,
+                        )
+                    )
+                },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.inverseOnSurface,
                     navigationIconContentColor = MaterialTheme.colorScheme.inverseSurface,
@@ -99,7 +127,7 @@ fun ViewNoteScreen(
                             navController.popBackStack()
                         }
                     ) {
-                        Icon(Icons.Default.ArrowBack,contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -108,8 +136,10 @@ fun ViewNoteScreen(
                             expanded = true
                         }
                     ) {
-                        Icon(Icons.Default.MoreVert,
-                            contentDescription = "More options")
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "More options"
+                        )
                     }
                     MaterialTheme(
                         shapes = MaterialTheme.shapes.copy(
@@ -118,15 +148,23 @@ fun ViewNoteScreen(
                     ) {
                         DropdownMenu(
                             expanded = expanded,
-                            offset = DpOffset(10.dp,0.dp),
+                            offset = DpOffset(10.dp, 0.dp),
                             onDismissRequest = { expanded = false }
                         ) {
                             DropdownMenuItem(
                                 text = { Text("Edit") },
                                 onClick = {
                                     expanded = false
-                                    onEvent(NoteEvent.StartEditing(note!!))
+                                    note?.let {
+                                        onEvent(NoteEvent.StartEditing(it))
+                                    }
                                     navController.navigate("${Screen.EditNote.route}/${selectedNoteId}")
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Export") },
+                                onClick = {
+                                    showExportDialog = true
                                 }
                             )
                             DropdownMenuItem(

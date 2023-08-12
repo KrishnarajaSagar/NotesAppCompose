@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.learning3.R
 import com.example.learning3.StoreThemePrefs
-import com.example.learning3.composables.DeleteDialog
+import com.example.learning3.composables.Dialog
 import com.example.learning3.composables.SettingsListItem
 import com.example.learning3.data.DarkThemeConfig
 import com.example.learning3.events.NoteEvent
@@ -74,9 +74,10 @@ fun SettingsScreen(
     var showDeleteCompleteIcon by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
-        DeleteDialog(
+        Dialog(
             titleText = "Confirm deletion?",
             bodyText = "All notes will be deleted permanently",
+            confirmButtonText = "Delete",
             onDismissRequest = { showDeleteDialog = false },
             onConfirmButtonClick = {
                 onEvent(NoteEvent.ClearAllNotes)

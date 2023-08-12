@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PushPin
@@ -48,13 +49,16 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.learning3.composables.DeleteDialog
+import com.example.learning3.composables.Dialog
 import com.example.learning3.composables.NotesGrid
 import com.example.learning3.data.Note
 import com.example.learning3.events.NoteEvent
 import com.example.learning3.ui.state.NoteState
 import com.example.learning3.navigation.Screen
 import com.example.learning3.composables.SearchBar
+import com.example.learning3.utilities.UtilityFunctions.exportNoteDialogBody
+import com.example.learning3.utilities.UtilityFunctions.exportNoteDialogSuccessMsg
+import com.example.learning3.utilities.UtilityFunctions.exportNoteDialogTitle
 import kotlinx.coroutines.delay
 
 
@@ -71,15 +75,17 @@ fun NotesScreen(
     val selectedNotes = remember { mutableStateListOf<Note>() }
     val pinnedNotes = remember { mutableStateListOf<Note>() }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showExportDialog by remember { mutableStateOf(false) }
     var showScreen by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
 
     if (showDeleteDialog) {
-        DeleteDialog(
+        Dialog(
             titleText = "Confirm deletion?",
             bodyText = "The selected notes will be deleted permanently",
+            confirmButtonText = "Delete",
             onDismissRequest = { showDeleteDialog = false },
             onConfirmButtonClick = {
                 selectedNotes.forEach {
@@ -92,6 +98,29 @@ fun NotesScreen(
                 showDeleteDialog = false
             }
         )
+    }
+
+    if (showExportDialog) {
+        Dialog(
+            titleText = exportNoteDialogTitle(selectedNotes),
+            bodyText = exportNoteDialogBody(selectedNotes),
+            confirmButtonText = "Export",
+            onDismissRequest = { showExportDialog = false },
+            onDismissButtonClick = { showExportDialog = false },
+            onConfirmButtonClick = {
+                selectedNotes.forEach { note ->
+                    onEvent(NoteEvent.ExportNote(note))
+                    onEvent(NoteEvent.DisableIsSelected(note))
+                }
+                Toast.makeText(
+                    context,
+                    exportNoteDialogSuccessMsg(selectedNotes),
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.d("exported", selectedNotes.size.toString())
+                selectedNotes.clear()
+                showExportDialog = false
+            })
     }
 
     Scaffold(
@@ -280,12 +309,22 @@ fun NotesScreen(
                                 )
                             }
                         }
+                        IconButton(
+                            onClick = {
+                                showExportDialog = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Download,
+                                contentDescription = "Export notes"
+                            )
+                        }
                     }
                 )
             }
 
             LaunchedEffect(key1 = 1, block = {
-                delay(100)
+                delay(50)
                 showScreen = true
             })
 
