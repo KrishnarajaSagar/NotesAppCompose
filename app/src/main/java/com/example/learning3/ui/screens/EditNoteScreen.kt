@@ -39,7 +39,6 @@ import com.example.learning3.ui.state.NoteState
 @Composable
 fun EditNoteScreen(
     navController: NavController,
-    selectedNoteId: Long,
     state: NoteState,
     onEvent: (NoteEvent) -> Unit
 ) {
@@ -142,7 +141,7 @@ fun EditNoteScreen(
                 modifier = Modifier
                     .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.None
                 )
             )
             Spacer(

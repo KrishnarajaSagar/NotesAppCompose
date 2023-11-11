@@ -138,7 +138,7 @@ fun AddNoteScreen(
                 modifier = Modifier
                     .fillMaxSize(),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.None
                 )
             )
             Spacer(
